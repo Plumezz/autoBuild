@@ -351,6 +351,7 @@ def buildTask(wsName, dep, cmakeArgs = None):
     buildCmd = f"cd {curWs}; colcon build"
     if wsName == "ws_moveit2":
         buildCmd = f"cd {curWs}; colcon build --packages-skip-regex moveit_planners_ompl --cmake-args -DCMAKE_BUILD_TYPE=Release"
+    
     result = subprocess.run(f"{buildCmd}", shell=True)
 
 

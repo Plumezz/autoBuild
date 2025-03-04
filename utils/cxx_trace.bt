@@ -1,0 +1,165 @@
+#!/usr/bin/env bpftrace
+
+#include <linux/sched.h>
+
+tracepoint:syscalls:sys_enter_execve
+{
+	$ppid = curtask->parent->pid;
+    $pp = curtask->parent->pid;
+    $pcomm = curtask->parent->comm;
+	@PPID[pid] = $pp;
+	if(@COMM[$pp] == "")
+	{
+		@COMM[$pp] = $pcomm;
+	}
+	@COMM[pid] = str(args->argv[0]);
+
+	if (str(args->argv[0]) == "colcon")
+	{
+		printf("here\n");
+		@start[pid] = nsecs;
+		$index = 0;
+		$arg_ptr = *(args->argv + $index);
+		printf("ppid: %d ", $ppid);
+		printf("pid: %d ", pid);
+		printf("parent cmd: %s ", comm);
+		printf("curCmd: ");
+		// printf("%d ", @start[pid]);
+		while($index < 20)
+		{
+			
+			printf("%s ", str(*(args->argv + $index), 128));
+			$index ++;
+		}	
+	
+
+		printf("\n");
+
+	}
+
+	if (str(args->filename) == "/usr/bin/c++")
+	{
+		@start[pid] = nsecs;
+		$index = 0;
+		$arg_ptr = *(args->argv + $index);
+		printf("ppid: %d ", $ppid);
+		printf("pid: %d ", pid);
+		printf("parent cmd: %s ", comm);
+		printf("curCmd: ");
+		// printf("%d ", @start[pid]);
+		while($index < 20)
+		{
+			
+			printf("%s ", str(*(args->argv + $index), 128));
+			$index ++;
+		}	
+	
+
+		printf("\n");
+
+	}
+
+	if (str(args->filename) == "/usr/bin/cc")
+	{
+		@start[pid] = nsecs;
+		$index = 0;
+		$arg_ptr = *(args->argv + $index);
+		printf("ppid: %d ", $ppid);
+		printf("pid: %d ", pid);
+		printf("parent cmd: %s ", comm);
+		printf("curCmd: ");
+		// printf("%d ", @start[pid]);
+		while($index < 20)
+		{
+			
+			printf("%s ", str(*(args->argv + $index), 128));
+			$index ++;
+		}	
+	
+
+		printf("\n");
+
+	}
+
+	if (str(args->filename) == "/usr/bin/python3")
+	{
+		@start[pid] = nsecs;
+		$index = 0;
+		$arg_ptr = *(args->argv + $index);
+		printf("ppid: %d ", $ppid);
+		printf("pid: %d ", pid);
+		printf("parent cmd: %s ", comm);
+		printf("curCmd: ");
+		// printf("%d ", @start[pid]);
+		while($index < 20)
+		{
+			
+			printf("%s ", str(*(args->argv + $index), 128));
+			$index ++;
+		}	
+	
+
+		printf("\n");
+
+	}
+
+	if (str(args->filename) == "/usr/bin/pkg-config")
+	{
+		@start[pid] = nsecs;
+		$index = 0;
+		$arg_ptr = *(args->argv + $index);
+		printf("ppid: %d ", $ppid);
+		printf("pid: %d ", pid);
+		printf("parent cmd: %s ", comm);
+		printf("curCmd: ");
+		// printf("%d ", @start[pid]);
+		while($index < 20)
+		{
+			
+			printf("%s ", str(*(args->argv + $index), 128));
+			$index ++;
+		}	
+	
+
+		printf("\n");
+
+	}
+	if (str(args->filename) == "/usr/lib/gcc/x86_64-linux-gnu/11/cc1plus")
+	{
+	
+		@start[pid] = nsecs;
+		$index = 0;
+		$arg_ptr = *(args->argv + $index);
+		printf("ppid: %d ", $ppid);
+		printf("pid: %d ", pid);
+		printf("parent cmd: %s ", comm);
+		printf("curCmd: ");
+		// printf("%d ", @start[pid]);
+		while($index < 20)
+		{
+			
+			printf("%s ", str(*(args->argv + $index), 128));
+			$index ++;
+		}	
+	
+
+		printf("\n");
+
+	}
+
+
+	
+
+}
+
+tracepoint:syscalls:sys_exit_execve
+/@start[pid] != 0/
+{
+    @cost[pid] = nsecs - @start[pid];
+    printf("pid: %d exit_execve cost time %d \n", pid, @cost[pid]);
+    printf("\n");
+    // printf("%d ", pid);
+    // printf("%d ", @cost[pid]);
+    delete(@start[pid]);
+}
+

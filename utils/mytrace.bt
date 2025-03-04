@@ -1,0 +1,31 @@
+#!/usr/bin/env bpftrace
+
+#include <linux/sched.h>
+tracepoint:syscalls:sys_enter_execve
+{
+    // parent process id
+    $ppid = curtask->parent->pid;
+    
+    $pp = curtask->parent->pid;
+    
+    // parent process name 
+    $pcomm = curtask->parent->comm;
+    
+    @PPID[pid] = $pp;
+    if(@COMM[$pp] == ""){
+        @COMM[$pp] = $pcomm;
+    }
+    @COMM[pid] = str(args->argv[0]);
+    @start[pid] = nsecs;
+}
+tracepoint:syscalls:sys_exit_execve
+/@start[pid] != 0/
+{
+    @cost[pid] = nsecs - @start[pid];
+    delete(@start[pid]);
+}
+
+END
+{
+    clear(@start);
+}
